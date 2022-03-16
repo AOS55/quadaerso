@@ -1,0 +1,9 @@
+[package]
+name = "quadaerso"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+aerso = { path = "../aerso" }
+matplotrust = "*"
+argmin = "0.5.1"
