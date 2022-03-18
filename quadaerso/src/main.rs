@@ -31,9 +31,8 @@ fn main() {
     let mut time = 0.0;
     
     
-    
     while time < 0.1 {
-    let cost = mpc::TargetPosition {x: 0.0, y: 0.0, z: 0.0, vehicle: vehicle, delta_t: delta_t};
+    let cost = mpc::TargetPosition {x: 0.0, y: 0.0, z: 0.0, vehicle, delta_t};
     let init_param: Vec<f64> = vec![0.0, 0.0, 0.0, 0.0];
     let linesearch = MoreThuenteLineSearch::new();
     let solver = SteepestDescent::new(linesearch);
@@ -41,7 +40,7 @@ fn main() {
             .add_observer(ArgminSlogLogger::term(), ObserverMode::Always)
             .max_iters(10)
             .run();
-        // println!("{}", res);
+        println!("{}", res);
         vehicle.step(delta_t, &[0.1, 0.1, 0.1, 0.1]);
         time += delta_t;
         println!("position: {}", vehicle.position());
