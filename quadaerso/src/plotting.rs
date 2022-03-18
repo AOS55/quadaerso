@@ -1,0 +1,34 @@
+use matplotrust::*;
+
+let mut x_pos = Vec::new();
+let mut y_pos = Vec::new();
+let mut z_pos = Vec::new();
+let mut u_vel = Vec::new();
+let mut v_vel = Vec::new();
+let mut w_vel = Vec::new();
+let mut alpha_vec = Vec::new();
+let mut time_vec = Vec::new();
+
+let x_time = &time_vec;
+let y_time = &time_vec;
+let z_time = &time_vec;
+let u_time = &time_vec;
+let v_time = &time_vec;
+let w_time = &time_vec;
+let alpha_time = &time_vec;
+let xp = line_plot::<f64, f64>(x_time.to_vec(), x_pos, None);
+let yp = line_plot::<f64, f64>(y_time.to_vec(), y_pos, None);
+let zp = line_plot::<f64, f64>(z_time.to_vec(), z_pos, None);
+let up = line_plot::<f64, f64>(u_time.to_vec(), u_vel, None);
+let vp = line_plot::<f64, f64>(v_time.to_vec(), v_vel, None);
+let wp = line_plot::<f64, f64>(w_time.to_vec(), w_vel, None);
+let alphap = line_plot::<f64, f64>(alpha_time.to_vec(), alpha_vec, None);
+let mut figure = Figure::new();
+// figure.add_plot(xp.clone());
+// figure.add_plot(yp.clone());
+//figure.add_plot(zp.clone());
+// figure.add_plot(alphap.clone());
+figure.add_plot(up.clone());
+figure.add_plot(vp.clone());
+figure.add_plot(wp.clone());
+figure.save("./plot.png", Some("/opt/miniconda3/envs/d2p-env/bin/python"));
