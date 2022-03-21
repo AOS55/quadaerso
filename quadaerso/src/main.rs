@@ -5,13 +5,25 @@ extern crate matplotrust;
 mod aircraft;
 mod mpc;
 
+use aerso::*;
+use aerso::types::*;
+use argmin::prelude::*;
+use argmin::solver::linesearch::MoreThuenteLineSearch;
+use argmin::solver::gradientdescent::SteepestDescent;
+use argmin::core::{Error, Executor, ObserverMode};
+
+fn run(cost: mpc::TargetPosition) -> Result<(), Error> {
+    let init_param: Vec<f64> = vec![0.0, 0.0, 0.0, 0.0];
+    let linesearch = MoreThuenteLineSearch::new();
+    let solver = SteepestDescent::new(linesearch);
+    let res = Executor::new(cost, solver, init_param)
+        .add_observer(ArgminSlogLogger::term(), ObserverMode::Always)
+        .max_iters(10)
+        .run()?;
+    Ok(())
+}
+
 fn main() {
-    
-    use aerso::*;
-    use aerso::types::*;
-    use argmin::prelude::*;
-    use argmin::solver::linesearch::MoreThuenteLineSearch;
-    use argmin::solver::gradientdescent::SteepestDescent;
     
     let initial_position = Vector3::zeros();
     let initial_velocity = Vector3::zeros();
@@ -30,17 +42,14 @@ fn main() {
     let delta_t = 0.01;
     let mut time = 0.0;
     
-    
     while time < 0.1 {
-    let cost = mpc::TargetPosition {x: 0.0, y: 0.0, z: 0.0, vehicle, delta_t};
-    let init_param: Vec<f64> = vec![0.0, 0.0, 0.0, 0.0];
-    let linesearch = MoreThuenteLineSearch::new();
-    let solver = SteepestDescent::new(linesearch);
-        let res = Executor::new(cost, solver, init_param)
-            .add_observer(ArgminSlogLogger::term(), ObserverMode::Always)
-            .max_iters(10)
-            .run();
-        println!("{}", res);
+        let condition = mpc::Conditions {pos: vehicle.position().clone(),
+                                         vel: vehicle.velocity().clone(),
+                                         att: vehicle.attitude().clone(),
+                                         rate: vehicle.rates().clone()};
+        let cost = mpc::TargetPosition {x: 0.0, y: 0.0, z: 0.0, condition, delta_t};
+        let res = run(cost);
+        println!("Res is: {:?}", res);
         vehicle.step(delta_t, &[0.1, 0.1, 0.1, 0.1]);
         time += delta_t;
         println!("position: {}", vehicle.position());
